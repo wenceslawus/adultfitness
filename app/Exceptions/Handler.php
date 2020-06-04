@@ -1,0 +1,72 @@
+<?php
+
+namespace App\Exceptions;
+
+use Exception;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+
+class Handler extends ExceptionHandler
+{
+    /**
+     * A list of the exception types that are not reported.
+     *
+     * @var array
+     */
+    protected $dontReport = [
+        //
+    ];
+
+    /**
+     * A list of the inputs that are never flashed for validation exceptions.
+     *
+     * @var array
+     */
+    protected $dontFlash = [
+        'password',
+        'password_confirmation',
+    ];
+
+    /**
+     * Report or log an exception.
+     *
+     * @param  \Exception  $exception
+     * @return void
+     */
+    public function report(Exception $exception)
+    {
+        parent::report($exception);
+    }
+
+    /**
+     * Render an exception into an HTTP response.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Exception  $exception
+     * @return \Illuminate\Http\Response
+     */
+    public function render($request, Exception $exception)
+    {
+        $class = get_class($exception);
+		
+        switch ($class)
+        {
+			case "Symfony\Component\HttpKernel\Exception\NotFoundHttpException":
+				return response()->view('errors.404', [], 404);
+				//return response()->json([], 404);
+            case "Illuminate\Validation\ValidationException":
+                return response()->json([
+                    'errors' => $exception->errors()
+                ], 500);
+            default:
+                $pos = strrpos(get_class($exception),"\\");
+                if ($pos) {
+                    $pos++;
+                }
+                return response()->json([
+                    "message" => $exception->getMessage(),
+                    "error" => substr(get_class($exception), $pos),
+                    "trace" => $exception->getTrace()
+                ], 500);
+        }
+    }
+}
