@@ -10,7 +10,7 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "exif-js": "^2.3.0",
     "vimeo": "^2.1.1",
     "vue-agile": "^1.1.3",
